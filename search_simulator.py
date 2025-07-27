@@ -7,7 +7,7 @@ st.title("🌍 Google Search Simulator")
 st.caption("Simulate a localized Google search from any country and in any language.")
 
 # --- Search Query ---
-query = st.text_input("🔍 Enter your search query", "linen pants")
+query = st.text_input("🔍 Enter your search query")
 
 # --- Full list of Google-supported country codes (ISO 3166-1 Alpha-2) ---
 country_codes = {

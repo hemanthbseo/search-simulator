@@ -1,15 +1,16 @@
 import streamlit as st
 import urllib.parse
+import streamlit.components.v1 as components
 
 st.set_page_config(page_title="Google Search Simulator", layout="centered")
 
 st.title("🌍 Google Search Simulator")
 st.caption("Simulate a localized Google search from any country and in any language.")
 
-# --- Search Query ---
-query = st.text_input("🔍 Enter your search query")
+# --- Search Input ---
+query = st.text_input("🔍 Enter your search query", "")
 
-# --- Full list of Google-supported country codes (ISO 3166-1 Alpha-2) ---
+# --- Dropdown Data ---
 country_codes = {
     "United States": "us",
     "United Kingdom": "gb",
@@ -44,7 +45,6 @@ country_codes = {
     "Portugal": "pt"
 }
 
-# --- Google-supported languages (UI) ---
 language_codes = {
     "English": "en",
     "French": "fr",
@@ -77,22 +77,27 @@ language_codes = {
 
 # --- UI Dropdowns ---
 col1, col2 = st.columns(2)
-
 with col1:
-    selected_country = st.selectbox("🌐 Choose Country", options=list(country_codes.keys()), index=0)
+    selected_country = st.selectbox("🌐 Choose Country", options=list(country_codes.keys()))
 with col2:
-    selected_language = st.selectbox("🗣️ Choose Language", options=list(language_codes.keys()), index=0)
+    selected_language = st.selectbox("🗣️ Choose Language", options=list(language_codes.keys()))
 
-# --- Build the localized Google search URL ---
-if query:
-    gl = country_codes[selected_country]
-    hl = language_codes[selected_language]
-    encoded_query = urllib.parse.quote_plus(query)
-    search_url = f"https://www.google.com/search?q={encoded_query}&gl={gl}&hl={hl}&pws=0"
+# --- Search Button ---
+if st.button("🔎 Search"):
+    if not query.strip():
+        st.warning("Please enter a search query.")
+    else:
+        gl = country_codes[selected_country]
+        hl = language_codes[selected_language]
+        encoded_query = urllib.parse.quote_plus(query.strip())
+        search_url = f"https://www.google.com/search?q={encoded_query}&gl={gl}&hl={hl}&pws=0"
 
-    st.markdown("### 🔗 Localized Google Search Link")
-    st.code(search_url, language="text")
-    st.markdown(f"[🔍 Open Google Search in New Tab]({search_url})")
-
-    st.markdown("---")
-    st.caption(f"This search simulates a user in **{selected_country}** using the **{selected_language}** interface.")
+        # Open the URL in a new browser tab using JavaScript
+        components.html(
+            f"""
+            <script>
+            window.open("{search_url}", "_blank");
+            </script>
+            """,
+            height=0,
+        )
